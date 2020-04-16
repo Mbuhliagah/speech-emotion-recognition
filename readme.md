@@ -124,6 +124,9 @@ Developed the CNN model with Keras and constructed with 3 Conv1D layers with reg
 # Project Summary
 Inconclusion, The experiment went wall with classification of emotion by developing with CNN with Keras and aapplied both L2 regularization and dropout regularization. Moreover, Data Augmentation improve the score. Also, we can conclude that same emotion with different gender has different features and may not be easy to distangush between them with the current model as when inspected of some emotion we can see the simileraty in Man but differet in women.
 
+# Live Demo
+for live demo please refare to En_16Class notebook
+
 # Futer Work 
 Collecting more audio data and experiment with different model like RNN, experiment with different augmentation method and develop the model to predict live conversation.Making this project a tool for company and organizations to use like e-governments and Call center..etc. As monitoring and improving customer experience will help business retain revenue and earn new customer.
 
