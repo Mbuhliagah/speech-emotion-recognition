@@ -1,54 +1,134 @@
-# Capstone Project
 
-Your Capstone project is the culmination of your time at GA. You will be tasked with developing an interesting question, collecting the data required to model that data, developing the strongest model (or models) for prediction, and communicating those findings to other data scientists and non-technical individuals. This introductory document lays out the five consitutent portions of the project and their due dates.
+[![General Assembly Logo](https://camo.githubusercontent.com/1a91b05b8f4d44b5bbfb83abac2b0996d8e26c92/687474703a2f2f692e696d6775722e636f6d2f6b6538555354712e706e67)](https://generalassemb.ly/education/web-development-immersive)
+![Misk Logo](https://i.ibb.co/KmXhJbm/Webp-net-resizeimage-1.png)
 
-## Your Deliverables
+# Speech Emotion Recognition 
+Speech is the most natural way of expressing ourselves as humans. Moreover, with the advance technology in self assitance like Siri we can embedding speech emotion recognition (SER) to identify user mode and emotion to response accordingly. Also, SER could help business retain revenue and earn new customer, by measuring their costumer experience. So, it's natural to extand this to a computer application as a collection of methodologies that process and classify speech signals to detect the embedded emotions.
+![](https://cdn-images-1.medium.com/freeze/max/1000/0*tqQ-x7QM2zKhJB9F.jpg)
+# Problem Statement:
+- Customer Experience. 
+Since we are different as human being we express emotions differently which results in misunderstanding. One of the challenges to knowing the other’s feeling is by their facial expressions and tone of voice. So, How Call Center or Customer experience know of  their customer satisfaction
+- Hearing impairment.
+This is easy with people without any disability but with hearing impairment  people detecting emotions may be very challenging even with speech disorder. So, with SER people with hearing impairment can get their message with the emotion which make the communication human-like.
+ 
 
-- A well-made predictive model using either structured or unstructured machine learning techniques (or other technique approved in advanced by the global instructors), as well as clean, well-written code.
-- A technical report aimed at fellow data scientists that explains your process and findings
-- A public presentation of your findings aimed at laypeople.
+# Solutions: 
+By using librosa library on audio speech we can extract feature for further analysis, by developing model to analysis speech signal then predict and classify  speech sounds into emotions.
 
-### **[Capstone, Part 1: Topic Proposals](./part_01/)**
+# Audio Data 
+- English Audio Speech data [RAVDES](https://zenodo.org/record/1188976#.XpiSSi2B3RY)
+- Arabic Audio Speech data [Kaggle](https://www.kaggle.com/suso172/arabic-natural-audio-dataset)
 
-In Part 1, get started by choosing **three potential topics and problems**, describing your goals & criteria for success, potential audience(s), and identifying 1-3 potential datasets. In the field of data science, good projects are practical. Your capstone project should be manageable and affect a real world audience. This might be a domain you are familiar with, a particular interest you have, something that affects a community you are involved in, or an area that relates to a field you wish to work in.
+# Reading Data
+- English Audio 
+-- By using OS to read file from divice and creating Dataframe based on the following information from filenmae.
+-- Modality (01 = full-AV, 02 = video-only, 03 = audio-only).
+--Vocal channel (01 = speech, 02 = song).
+--Emotion (01 = neutral, 02 = calm, 03 = happy, 04 = sad, 05 = angry, 06 = fearful, 07 = disgust, 08 = --surprised).
+--Emotional intensity (01 = normal, 02 = strong). NOTE: There is no strong intensity for the 'neutral' emotion.
+--Statement (01 = "Kids are talking by the door", 02 = "Dogs are sitting by the door").
+--Repetition (01 = 1st repetition, 02 = 2nd repetition).
+--Actor (01 to 24. Odd numbered actors are male, even numbered actors are female).
+-- Their are 1440 Audio file used only 1200 file for train and test and execlude the rest for test.
+- Arabic Audio
+-- Audio were avilable in Kaggle as will as the dataframe with the extracted feature. 
+-- I used the dataframe as the audio were not clear to do extracting feature with librosa.
+-- Dataframe shape (1383, 847)
 
-One of the best ways to test ideas quickly is to share them with others. A good data scientist has to be comfortable discussing ideas and presenting to audiences. That's why for Part 1 of your Capstone project, you'll be preparing a lightning talk for your project.  You will discuss your candidate topics with your peers, and should be prepared to answer questions and defend your data selection(s). It should take no more than 3-5 minutes.
+### Feature Extraction 
+After inspicting random English audio speech file we can see all of them have silent of 0.5 second in the start so using librosa for feature extractig Audio using MFCC feature and trim silence in the beginning  and set rate sampling for the audio to 16000.
 
-**The ultimate choice of topic for your capstone project is yours!** However, this is research and development work. Sometimes projects that look easy can be difficult and vice versa. It never hurts to have a second (or third) option available.
+```py
+for i in tqdm(range(len(data2_df))):
+    X, sample_rate = librosa.load(data2_df.path[i], res_type='kaiser_fast',sr=16000,offset=0.5)
+    sample_rate = np.array(sample_rate)
+    mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13), axis=0)
+    feature = mfccs
+    data.loc[i] = [feature]
+```
 
-- **Goal**: Prepare a 3-5 minute lightning talk that covers three potential topics, including potential sources of data, goals, metrics and audience.
-- **Due**: March 25, 2020
+# Emotion Spectrogram 
+- Diffrent male speech emotion
+- Diffrent emotion between gender
 
-### **[Capstone, Part 2: Problem Statement + EDA](./part_02/)**
 
-For Part 2, provide a clear statement of the problem that you have chosen and an overview of your approach to solving that problem. Summarize your objectives, goals & success metrics, and any risks & assumptions. Outline your proposed methods and models, perform your initial EDA, and summarize the process. **Your data should be in hand by this point in the process!**
+# Key Finding (English Audio)
+### Modeling 
+- At first Develop the CNN model with Keras and constructed with 6 layers —  5 Conv1D layers followed by a Dense layer.
+- Second, Constructed with 3 Conv1D layers, 2 MaxPooling1D layer, 2 BarchNormalization, 1 dropout layer and followed by a Dense layer.
+- Then, Constructed with 4 Conv1D layers, 2 MaxPooling1D layer, 2 BarchNormalization , 2 dropout and 2 Dense layers.
+- Lastly constructed with 3 Conv1D layers with regularizers, 2 BarchNormalization, 4 MaxPooling1D, 4 dropout layers, and 3 Dense layers.
+### Data Augmentation: 
+- [Adding White Noise](https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.random.html)
+- Pitch Tuning.
+- Speed and Pitch Tuning.
 
-**Again, your data should be in hand by this point the process!**
+## Result:
+The best performance when applied both L2 regularization and dropout regularization.
+Data Augmentation (Adding White Noise & Pitch Tuning.)
+-- Base Score 7%
+-- Train Accuracy 97%
+-- Test Accuracy 83%
+```py
+model = Sequential()
 
-- **Goal**: Describe your proposed approach and summarize your initial EDA in a code submission to your local instructor
-- **Due**: March 26, 2020
+model.add(Conv1D(256, 8,padding='same', kernel_regularizer=regularizers.l2(0.01), activation='relu',
+                 input_shape=(x_traincnn.shape[1],x_traincnn.shape[2])))
 
-### **[Capstone, Part 3: Verbal Progress Report + Preliminary Findings](./part_03/)**
+model.add(BatchNormalization())
+model.add(Conv1D(128, 8, activation='relu', kernel_regularizer=regularizers.l2(0.02)))
+model.add(BatchNormalization())
+model.add(MaxPooling1D(pool_size=(2)))
+model.add(Dropout(0.20))
 
-In Part 3, you'll discuss a progress of your work in order to get feedback along the way. Describe your approach, initial results, and any setbacks or lessons learned so far. Your report should include updated visual and statistical analysis of your data. You’ll also meet with your local instructional team to get feedback on your results so far!
+model.add(Conv1D(64, 8, activation='relu', kernel_regularizer=regularizers.l2(0.02)))
+model.add(BatchNormalization())
+model.add(Conv1D(64, 8, activation='relu', kernel_regularizer=regularizers.l2(0.02)))
+model.add(BatchNormalization())       
+model.add(MaxPooling1D(pool_size=(2)))
+model.add(Dropout(0.30))
 
-- **Goal**: Discuss progress and setbacks, include visual and statistical analysis, review with instructor.
-- **Due**: TBA
+model.add(Flatten())
 
-### **[Capstone, Part 4: Report Writeup + Technical Analysis](./part_04/)**
+model.add(Dense(1024, activation='relu', kernel_regularizer=regularizers.l2(0.02)))
+model.add(Dropout(0.30))
 
-By now, you're ready to apply your modeling skills to make machine learning predictions. Your goal for Part 4 is to develop a technical document (in the form of Jupyter notebook) that can be shared among your peers.
 
-Document your research and analysis including a summary, an explanation of your modeling approach as well as the strengths and weaknesses of any variables in the process. You should provide insight into your analysis, using best practices like cross validation or applicable prediction metrics.
+model.add(Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.02)))
+model.add(Dropout(0.20))
 
-- **Goal**: Detailed report and code with a summary of your statistical analysis, model, and evaluation metrics.
-- **Due**: April 16, 2020
 
-### **[Capstone, Part 5: Presentation + Recommendations](./part_05/)**
+model.add(Dense(y_train.shape[1], activation='softmax'))
 
-Whether during an interview or as part of a job, you will frequently have to present your findings to business partners and other interested parties - many of whom won't know anything about data science! That's why for Part 5, you'll create a presentation of your previous findings with a non-technical audience in mind.
+adam = keras.optimizers.Adam(lr=0.0001, decay=1e-6)
+```
 
-You should already have the analytical work complete, so now it's time to clean up and clarify your findings. Come up with a detailed slide deck or interactive demo that explains your data, visualizes your model, describes your approach, articulates strengths and weaknesses, and presents specific recommendations. Be prepared to explain and defend your model to an inquisitive audience!
+##	Second Approach:
+Simplify the model by reducing the target class:
+- First reduce target to 5 emotion for both gender.
+-- It show alittle improvment in the accuracy score.
+-- Train accuracy 99%   Test accuracy 92%
+- Second, reduce the target to Emotion only 
+-- Train Accuracy 98%  & Test Accuracy 87%
+- Third reduce target to only Gender without Emotion 
+-- Train Accuracy 98%  Test Accuracy 94%
 
-- **Goal**: Detailed presentation deck that relates your data, model, and findings to a non-technical audience.
-- **Due**: April 16, 2020
+# Key Finding (Arabic Audo Data)
+Developed the CNN model with Keras and constructed with 3 Conv1D layers with regularizers, 2 BarchNormalization, 4 MaxPooling1D, 4 dropout layers, and 3 Dense layers.
+- Train Accuracy 99%
+- Test Accuracy 94%
+- Base Score 53%
+
+
+
+# Project Summary
+Inconclusion, The experiment went wall with classification of emotion by developing with CNN with Keras and aapplied both L2 regularization and dropout regularization. Moreover, Data Augmentation improve the score. Also, we can conclude that same emotion with different gender has different features and may not be easy to distangush between them with the current model as when inspected of some emotion we can see the simileraty in Man but differet in women.
+
+# Futer Work 
+Collecting more audio data and experiment with different model like RNN, experiment with different augmentation method and develop the model to predict live conversation.Making this project a tool for company and organizations to use like e-governments and Call center..etc. As monitoring and improving customer experience will help business retain revenue and earn new customer.
+
+# About me:
+GitHub: https://github.com/Mbuhliagah
+Linkedin: https://www.linkedin.com/in/mbuhliagah-data-scientist/
+
+
